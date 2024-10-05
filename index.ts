@@ -4,6 +4,10 @@ import morgan from "morgan";
 import cors from "cors";
 import dotenv from "dotenv";
 import { Logger } from "@sync-markets/utilities";
+import orderRouter from "./src/routes/order";
+import userRouter from "./src/routes/user";
+import positionRouter from "./src/routes/position";
+import tradeRouter from "./src/routes/trade";
 
 const app = express();
 const logger = new Logger();
@@ -28,6 +32,12 @@ app.use(
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Routes
+app.use("/api/orders", orderRouter);
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/positions", positionRouter);
+app.use("/api/v1/trades", tradeRouter);
 
 app.use((req: Request, res: Response) => {
   res.sendStatus(404);
