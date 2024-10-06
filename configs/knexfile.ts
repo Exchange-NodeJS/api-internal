@@ -1,6 +1,4 @@
-import { Logger } from "@sync-markets/utilities";
 import type { Knex } from "knex";
-import path from "path";
 
 const configKnex: { [key: string]: Knex.Config } = {
   development: {
