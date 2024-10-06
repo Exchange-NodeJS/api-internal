@@ -10,12 +10,12 @@ export class Symbol extends Model {
 
   static get relationMappings() {
     return {
-      user: {
-        relation: Model.BelongsToOneRelation,
+      orders: {
+        relation: Model.HasManyRelation,
         modelClass: Order,
         join: {
           from: "symbols.name",
-          to: "orders.id",
+          to: "orders.pair",
         },
       },
     };

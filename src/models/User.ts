@@ -11,6 +11,11 @@ export class User extends Model {
   email!: string;
   password!: string;
   passSalt!: string;
+  city!: string;
+  zipcode!: number;
+  country!: string;
+  address!: string;
+  address_number!: number;
   balance!: number;
 
   static get tableName() {
@@ -41,7 +46,12 @@ export class User extends Model {
         email: { type: "string", minLength: 1, maxLength: 255 },
         password: { type: "string", minLength: 8 },
         passSalt: { type: "string" },
-        balance: { type: "decimal" },
+        city: { type: "string" },
+        zipcode: { type: "integer" },
+        country: { type: "string" },
+        address: { type: "string" },
+        address_number: { type: "integer" },
+        balance: { type: "number" },
       },
     };
   }

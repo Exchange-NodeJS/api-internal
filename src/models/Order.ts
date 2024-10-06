@@ -8,8 +8,8 @@ export class Order extends Model {
   action!: "SELL" | "BUY";
   amount!: number;
   price!: number;
-  stopLoss!: number;
-  takeProfit!: number;
+  stopPrice!: number;
+  takePrice!: number;
   pair!: string;
   status!: "active" | "closed";
 
@@ -27,12 +27,13 @@ export class Order extends Model {
           to: "users.id",
         },
       },
+
       pair: {
-        relation: Model.HasOneRelation,
+        relation: Model.BelongsToOneRelation,
         modelClass: Symbol,
         join: {
-          from: "symbols.name",
-          to: "orders.pair",
+          from: "orders.pair",
+          to: "symbols.name",
         },
       },
     };
@@ -44,13 +45,13 @@ export class Order extends Model {
       required: ["user_id", "action", "amount", "price", "pair"],
 
       properties: {
-        id: { type: "integer" },
+        id: { type: "string" },
         user_id: { type: "integer" },
         action: { type: "string", enum: ["SELL", "BUY"] },
-        amount: { type: "decimal" },
-        price: { type: "decimal" },
-        stopLoss: { type: "decimal" },
-        takeProfit: { type: "decimal" },
+        amount: { type: "number" },
+        price: { type: "number" },
+        stopLoss: { type: "number" },
+        takeProfit: { type: "number" },
         pair: { type: "string" },
         status: {
           type: "string",
@@ -65,6 +66,7 @@ export class Order extends Model {
    * @param {QueryContext} queryContext The query context
    */
   $beforeInsert(queryContext: QueryContext): Promise<any> | void {
-    this.id = `O-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const status = this.status == "active" ? "0" : "C";
+    this.id = `${status}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
   }
 }

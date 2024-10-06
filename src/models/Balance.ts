@@ -31,7 +31,7 @@ export class Balance extends Model {
       required: ["user_id"],
       properties: {
         user_id: { type: "integer" },
-        balance: { type: "decimal" },
+        balance: { type: "number" },
       },
     };
   }
