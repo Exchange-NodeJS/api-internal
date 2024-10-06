@@ -8,8 +8,17 @@ import orderRouter from "./src/routes/order";
 import userRouter from "./src/routes/user";
 import positionRouter from "./src/routes/position";
 import tradeRouter from "./src/routes/trade";
+import Knex from "knex";
+import { Model } from "objection";
+import knexConfig from "./configs/knexfile";
 
 const app = express();
+const knex = Knex(
+  process.env.NODE_ENV == "development"
+    ? knexConfig.development
+    : knexConfig.production
+);
+
 const logger = new Logger();
 
 const corsOptions: cors.CorsOptions = {
@@ -54,6 +63,7 @@ const server = app.listen(
     else logger.info("====== WORKING IN PRODUCTION MODE ======");
 
     app.set("logger", logger);
+    Model.knex(knex);
   }
 );
 
