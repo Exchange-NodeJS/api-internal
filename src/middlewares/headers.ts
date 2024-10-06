@@ -9,17 +9,17 @@ import { Request, Response, NextFunction } from "express";
  * @param next - The next function to call the next middleware or route handler.
  * @returns Calls the next middleware or route handler.
  */
-const applySecurityHeaders = (
+function applySecurityHeaders(
   req: Request,
   res: Response,
   next: NextFunction
-): void => {
+): void {
   res.setHeader(
     "Content-Security-Policy",
     "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'"
   );
 
-  next(); // Proceed to the next middleware or route handler
-};
+  next();
+}
 
 export default applySecurityHeaders;

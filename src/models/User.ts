@@ -1,5 +1,5 @@
 import { Model, ModelOptions, QueryContext } from "objection";
-import { hash_password } from "src/lib/security";
+import { hash_password } from "../lib/security";
 import { Balance } from "./Balance";
 
 /**

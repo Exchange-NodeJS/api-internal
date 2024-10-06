@@ -9,20 +9,20 @@ import { Request, Response, NextFunction } from "express";
  * @param next - The next function to call the next middleware or route handler.
  * @returns Calls the next middleware or route handler, or sends a 403 status if payload size exceeds the limit.
  */
-const enforcePayloadSizeLimit = (
+function enforcePayloadSizeLimit(
   req: Request,
   res: Response,
   next: NextFunction
-): void => {
+): void {
   const MAX_PAYLOAD_SIZE = 1024 * 1024; // 1 MB
 
   const contentLength = req.headers["content-length"];
   if (contentLength && parseInt(contentLength, 10) > MAX_PAYLOAD_SIZE) {
     res.sendStatus(403);
-    return; // Forbidden
+    return;
   }
 
   next();
-};
+}
 
 export default enforcePayloadSizeLimit;

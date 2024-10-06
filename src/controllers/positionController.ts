@@ -1,9 +1,11 @@
-export function create_position() {}
+import { Request, Response } from "express";
 
-export function get_position() {}
+export function create_position(req:Request, res:Response) {}
 
-export function put_position() {}
+export function get_position(req:Request, res:Response) {}
 
-export function patch_position() {}
+export function put_position(req:Request, res:Response) {}
 
-export function delete_position() {}
+export function patch_position(req:Request, res:Response) {}
+
+export function delete_position(req:Request, res:Response) {}
