@@ -1,9 +1,11 @@
-export function create_order() {}
+import { Request, Response } from "express";
 
-export function get_order() {}
+export function create_order(req:Request, res:Response) {}
 
-export function put_order() {}
+export function get_order(req:Request, res:Response) {}
 
-export function patch_order() {}
+export function put_order(req:Request, res:Response) {}
 
-export function delete_order() {}
+export function patch_order(req:Request, res:Response) {}
+
+export function delete_order(req:Request, res:Response) {}

@@ -1,4 +1,4 @@
-import { User } from "src/models/User";
+import { User } from "../models/User";
 
 export async function create_user(name: string, email: string): Promise<User> {
   const newUser = await User.query().insert({

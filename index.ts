@@ -11,6 +11,10 @@ import tradeRouter from "./src/routes/trade";
 import Knex from "knex";
 import { Model } from "objection";
 import knexConfig from "./configs/knexfile";
+import applySecurityHeaders from "./src/middlewares/headers";
+import enforcePayloadSizeLimit from "./src/middlewares/payloadsize";
+import applyTimeout from "./src/middlewares/timeout";
+import applyWhitelist from "./src/middlewares/whitelist";
 
 const app = express();
 const knex = Knex(
@@ -22,7 +26,7 @@ const knex = Knex(
 const logger = new Logger();
 
 const corsOptions: cors.CorsOptions = {
-  origin: ["http://localhost:4200"],
+  origin: ["http://localhost:5000"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization", "Accept"],
   credentials: true,
@@ -35,18 +39,44 @@ app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 app.use(helmet());
 app.use(
-  morgan("combined", {
-    stream: { write: (message) => logger.info(message.trim()) },
-  })
+  morgan(
+    ':remote-addr :remote-user ":method :url HTTP/:http-version" :referrer ":user-agent" :status :response-time ms',
+    {
+      stream: { write: (message) => logger.error(`${message.trim()}`) },
+      skip: (req: Request, res: Response) => {
+        return res.statusCode < 400;
+      },
+    }
+  )
+);
+app.use(
+  morgan(
+    ':remote-addr :remote-user ":method :url HTTP/:http-version" :referrer ":user-agent" :status :response-time ms',
+    {
+      stream: { write: (message) => logger.info(`${message.trim()}`) },
+      skip: (req: Request, res: Response) => {
+        return res.statusCode >= 400;
+      },
+    }
+  )
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(applySecurityHeaders);
+app.use(enforcePayloadSizeLimit);
+app.use(applyTimeout);
+app.use(applyWhitelist);
 
 // Routes
 app.use("/api/orders", orderRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/positions", positionRouter);
 app.use("/api/v1/trades", tradeRouter);
+
+app.use("/api/health", (req, res) => {
+  return res.sendStatus(200);
+});
 
 app.use((req: Request, res: Response) => {
   res.sendStatus(404);
@@ -63,12 +93,34 @@ const server = app.listen(
     else logger.info("====== WORKING IN PRODUCTION MODE ======");
 
     app.set("logger", logger);
+    app.set("knex", knex);
     Model.knex(knex);
   }
 );
 
 server.keepAliveTimeout = 30 * 1000;
 server.headersTimeout = 35 * 1000;
+
+let shuttingDown = false;
+
+// Closing resources when main thread is closed
+async function handleShutdown() {
+  if (shuttingDown) return;
+  shuttingDown = true;
+
+  try {
+    await knex.destroy();
+    logger.info("====== RESOURCES CLOSED ======");
+    process.exit(0);
+  } catch (error) {
+    logger.error(`Error during shutdown: ${error}`);
+    process.exit(1);
+  }
+}
+
+process.on("SIGINT", () => handleShutdown());
+process.on("SIGTERM", () => handleShutdown());
+process.on("SIGHUP", () => handleShutdown());
 
 process.on("uncaughtException", (err) => {
   logger.error(`[Error: uncaughtException] - ${err}`);
