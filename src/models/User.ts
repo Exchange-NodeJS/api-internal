@@ -6,11 +6,12 @@ import { Balance } from "./Balance";
  * Defines the model for users
  */
 export class User extends Model {
-  private id!: number;
-  private name!: string;
-  private email!: string;
-  private password!: string;
-  private passSalt!: string;
+  id!: number;
+  name!: string;
+  email!: string;
+  password!: string;
+  passSalt!: string;
+  balance!: number;
 
   static get tableName() {
     return "users";
@@ -32,22 +33,27 @@ export class User extends Model {
   static get jsonSchema() {
     return {
       type: "object",
-      required: ["name", "email", "password", "passSalt"],
+      required: ["name", "email", "password"],
 
       properties: {
         id: { type: "integer" },
         name: { type: "string", minLength: 1, maxLength: 255 },
         email: { type: "string", minLength: 1, maxLength: 255 },
-        password: { type: "string", minLength: 6 },
+        password: { type: "string", minLength: 8 },
         passSalt: { type: "string" },
+        balance: { type: "decimal" },
       },
     };
   }
 
-  //async $beforeInsert(queryContext: QueryContext): Promise<void> {
-  //  const result = hash_password(this.password);
-  //
-  //  this.passSalt = result[0];
-  //  this.password = result[1];
-  //}
+  /**
+   * Hashes the password provided and stores the hashed password and the hash salt
+   * @param { QueryContext} queryContext The query context
+   */
+  $beforeInsert(queryContext: QueryContext): Promise<any> | void {
+    const result = hash_password(this.password);
+
+    this.passSalt = result[0];
+    this.password = result[1];
+  }
 }

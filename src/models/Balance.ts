@@ -5,8 +5,8 @@ import { User } from "./User";
  * Defines the model for balances
  */
 export class Balance extends Model {
-  private id!: number;
-  private balance!: number;
+  user_id!: number;
+  balance!: number;
 
   static get tableName() {
     return "balances";
@@ -28,8 +28,7 @@ export class Balance extends Model {
   static get jsonSchema() {
     return {
       type: "object",
-      required: ["user_id", "balance"],
-
+      required: ["user_id"],
       properties: {
         user_id: { type: "integer" },
         balance: { type: "decimal" },
