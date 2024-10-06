@@ -1,0 +1,15 @@
+services:
+  postgres1:
+    image: postgres:latest
+    container_name: sync_markets_dev
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: sync_markets
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  pgdata:
